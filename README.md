@@ -4,6 +4,7 @@ A SKOS controlled vocabulary of **~288,000 legal-issue concepts** organised unde
 **13 top-level legal domains**, with stable, permanent identifiers.
 
 - **Browse / data site:** https://arthrod.github.io/legal-taxonomy/
+- **Interactive explorer:** https://arthrod.github.io/legal-taxonomy/explore/ *(in-browser notebook — no install)*
 - **Permanent identifier base:** `https://w3id.org/legal-taxonomy/` *(pending [w3id PR #6235](https://github.com/perma-id/w3id.org/pull/6235); until merged, use the GitHub Pages URL above)*
 
 ## Identifiers
@@ -24,6 +25,7 @@ from the label — a concept keeps its ID even if it is relabelled or moved.
 | [`legal-taxonomy.jsonld`](https://arthrod.github.io/legal-taxonomy/legal-taxonomy.jsonld) | JSON-LD | full vocabulary |
 | [`scheme.ttl`](https://arthrod.github.io/legal-taxonomy/scheme.ttl) | Turtle | the `skos:ConceptScheme` + 13 top concepts |
 | [`dumps/`](https://arthrod.github.io/legal-taxonomy/dumps/) | Turtle | concepts split by top-level domain |
+| [`legal-taxonomy.db.gz`](https://arthrod.github.io/legal-taxonomy/legal-taxonomy.db.gz) | SQLite (gzip) | all 287k concepts + 156k source links, queryable |
 
 GitHub Pages serves `.ttl` as `text/turtle` and `.jsonld` as `application/ld+json`,
 so Linked Data clients can consume the URLs directly.
