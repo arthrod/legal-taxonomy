@@ -5,7 +5,7 @@ A SKOS controlled vocabulary of **~288,000 legal-issue concepts** organised unde
 
 - **Browse / data site:** https://arthrod.github.io/legal-taxonomy/
 - **Interactive explorer:** https://arthrod.github.io/legal-taxonomy/explore/ *(in-browser notebook — no install)*
-- **Permanent identifier base:** `https://w3id.org/legal-taxonomy/` *(pending [w3id PR #6235](https://github.com/perma-id/w3id.org/pull/6235); until merged, use the GitHub Pages URL above)*
+- **Permanent identifier base:** `https://w3id.org/legal-taxonomy/` *(live via [w3id PR #6235](https://github.com/perma-id/w3id.org/pull/6235) — 302-redirects to the GitHub Pages site)*
 
 ## Identifiers
 
@@ -16,6 +16,11 @@ A SKOS controlled vocabulary of **~288,000 legal-issue concepts** organised unde
 
 Each concept is a `skos:Concept`. Identity is the opaque `skos:notation`, decoupled
 from the label — a concept keeps its ID even if it is relabelled or moved.
+
+Every concept URI **resolves to a human-readable HTML page** (breadcrumb up to its
+top domain, broader/narrower links, source counts) — e.g.
+[`…/concept/010089`](https://w3id.org/legal-taxonomy/concept/010089) — in addition to
+appearing in the bulk RDF dumps below.
 
 ## Download the data
 
@@ -48,6 +53,20 @@ Concepts are derived from an aggregation of legal-source classifications. The tr
 is **stable and addressable**; editorial de-duplication of near-synonymous labels is
 an ongoing curation pass. Retired concepts are deprecated (`owl:deprecated`), never
 deleted, so published URIs never break.
+
+## Regenerating the concept pages
+
+The per-concept HTML pages under `concept/` are generated from
+`legal-taxonomy.db.gz`:
+
+```
+python3 tools/gen_concept_pages.py
+```
+
+This writes `concept/{notation}.html` for every concept — flat files so
+`/concept/{notation}` resolves with a direct `200` on GitHub Pages — plus a
+`concept/` index and the shared stylesheet. Re-run it after any curation pass
+that changes the SQLite snapshot.
 
 ## Maintainer
 
