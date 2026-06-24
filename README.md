@@ -1,7 +1,9 @@
 # Open Legal Issue Taxonomy (OLIT)
 
-A SKOS controlled vocabulary of **~288,000 legal-issue concepts** organised under
-**13 top-level legal domains**, with stable, permanent identifiers.
+A SKOS controlled vocabulary of **247,929 active legal-issue concepts** organised under
+**13 top-level legal domains**, with stable, permanent identifiers. A further **39,786
+near-duplicate concepts have been merged and deprecated** (retained as resolvable URIs) by a
+six-model ensemble de-duplication pass — see [Status & provenance](#status--provenance).
 
 - **Browse / data site:** https://arthrod.github.io/legal-taxonomy/
 - **Interactive explorer:** https://arthrod.github.io/legal-taxonomy/explore/ *(in-browser notebook — no install)*
@@ -30,7 +32,7 @@ appearing in the bulk RDF dumps below.
 | [`legal-taxonomy.jsonld`](https://arthrod.github.io/legal-taxonomy/legal-taxonomy.jsonld) | JSON-LD | full vocabulary |
 | [`scheme.ttl`](https://arthrod.github.io/legal-taxonomy/scheme.ttl) | Turtle | the `skos:ConceptScheme` + 13 top concepts |
 | [`dumps/`](https://arthrod.github.io/legal-taxonomy/dumps/) | Turtle | concepts split by top-level domain |
-| [`legal-taxonomy.db.gz`](https://arthrod.github.io/legal-taxonomy/legal-taxonomy.db.gz) | SQLite (gzip) | all 287k concepts + 156k source links, queryable |
+| [`legal-taxonomy.db.gz`](https://arthrod.github.io/legal-taxonomy/legal-taxonomy.db.gz) | SQLite (gzip) | all 287,715 concepts (247,929 active + 39,786 deprecated) + 156k source links, queryable |
 
 GitHub Pages serves `.ttl` as `text/turtle` and `.jsonld` as `application/ld+json`,
 so Linked Data clients can consume the URLs directly.
@@ -44,15 +46,26 @@ skos:prefLabel      the preferred label (@en)
 skos:broader        the parent concept
 skos:topConceptOf   the 13 top-level domains
 skos:inScheme       the concept scheme
-owl:deprecated      set on retired concepts (their URIs stay resolvable)
+owl:deprecated      set on retired (merged) concepts — their URIs stay resolvable
+dct:isReplacedBy    on a deprecated concept, points to the live concept it merged into
+skos:historyNote    records the merge ("Deduplicated 2026-06: merged into c:…")
 ```
+
+Deprecated concepts keep their `skos:notation`, `skos:prefLabel`, and `skos:inScheme`, but are
+dropped from the live `skos:broader` hierarchy — so the active tree contains only live concepts,
+while every retired URI still dereferences and tells you (via `dct:isReplacedBy`) where to go.
 
 ## Status & provenance
 
-Concepts are derived from an aggregation of legal-source classifications. The tree
-is **stable and addressable**; editorial de-duplication of near-synonymous labels is
-an ongoing curation pass. Retired concepts are deprecated (`owl:deprecated`), never
-deleted, so published URIs never break.
+Concepts are derived from an aggregation of legal-source classifications. The tree is
+**stable and addressable**. A de-duplication pass merged near-synonymous **sibling** concepts
+(same parent only — a label repeated under *different* parents is a distinct concept and is kept;
+e.g. `DAMAGES` survives under 186 different parents). Merges were decided by a **six-model
+ensemble** (claude-opus-4-8, gpt-5.4, glm-5.2, deepseek-v4-pro, minimax-m3, nemotron-3-ultra-550b):
+a sibling pair is merged only when **≥ half the models agree** (or all three of glm/minimax/deepseek
+agree), plus word-order/plural and orthographic equivalence. Retired concepts are deprecated
+(`owl:deprecated`) and linked to their replacement (`dct:isReplacedBy`), **never deleted**, so
+published URIs never break.
 
 ## Regenerating the concept pages
 
@@ -67,6 +80,12 @@ This writes `concept/{notation}.html` for every concept — flat files so
 `/concept/{notation}` resolves with a direct `200` on GitHub Pages — plus a
 `concept/` index and the shared stylesheet. Re-run it after any curation pass
 that changes the SQLite snapshot.
+
+The RDF artifacts (`legal-taxonomy.ttl`, `legal-taxonomy.jsonld`, `scheme.ttl`, `dumps/`)
+are regenerated from the same `legal-taxonomy.db` by `python3 tools/gen_rdf.py`, which
+emits the `owl:deprecated` / `dct:isReplacedBy` / `skos:historyNote` triples for merged
+concepts. The de-duplication tooling itself lives under `dedup/` (six-model ensemble vote,
+apply, lexical closure, and an integrity verifier — `dedup/SUMMARY.md` has the details).
 
 ## Maintainer
 

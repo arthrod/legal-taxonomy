@@ -71,9 +71,11 @@ def main():
     try:
         con = sqlite3.connect(db_path)
         con.row_factory = sqlite3.Row
+        cols = [r[1] for r in con.execute("PRAGMA table_info(concepts)")]
+        rb_sel = ",replaced_by" if "replaced_by" in cols else ",NULL AS replaced_by"
         rows = con.execute(
-            "SELECT notation,uri,pref_label,broader,depth,top_domain,deprecated "
-            "FROM concepts"
+            "SELECT notation,uri,pref_label,broader,depth,top_domain,deprecated"
+            + rb_sel + " FROM concepts"
         ).fetchall()
         C = {r["notation"]: r for r in rows}
         print(f"loaded {len(C)} concepts in {time.time()-t0:.1f}s")
@@ -139,6 +141,11 @@ def main():
         notation = r["notation"]
         label, uri, broader = r["pref_label"], r["uri"], r["broader"]
         depth, domain, deprecated = r["depth"], r["top_domain"], r["deprecated"]
+        replaced_by = r["replaced_by"]
+        # follow replaced_by chain to the final live winner
+        rb_final, _g = replaced_by, 0
+        while rb_final and rb_final in C and C[rb_final]["deprecated"] and _g < 12:
+            rb_final = C[rb_final]["replaced_by"]; _g += 1
 
         bc = [f'<a href="{BASE}/">OLIT</a>',
               f'<a href="{rel_prefix() or "./"}">concepts</a>']
@@ -188,13 +195,23 @@ def main():
         else:
             sources_block = '<p class="note">No source sections linked.</p>'
 
-        dep_banner = (
-            '<p class="dep">⚠ This concept is <strong>deprecated</strong>. '
-            "Its URI stays resolvable, but it should not be used for new "
-            "classification.</p>"
-            if deprecated
-            else ""
-        )
+        if deprecated:
+            if rb_final and rb_final in C:
+                rb_link = (f'<a href="{link_to(rb_final)}">{e(C[rb_final]["pref_label"])}</a> '
+                           f"<code>{rb_final}</code>")
+                dep_banner = (
+                    '<p class="dep">⚠ This concept is <strong>deprecated</strong> '
+                    "(merged during de-duplication). Its URI stays resolvable for "
+                    f"stability, but use <strong>{rb_link}</strong> instead.</p>"
+                )
+            else:
+                dep_banner = (
+                    '<p class="dep">⚠ This concept is <strong>deprecated</strong>. '
+                    "Its URI stays resolvable, but it should not be used for new "
+                    "classification.</p>"
+                )
+        else:
+            dep_banner = ""
 
         jd = {
             "@context": {"skos": "http://www.w3.org/2004/02/skos/core#"},
@@ -211,6 +228,9 @@ def main():
         if deprecated:
             jd["owl:deprecated"] = True
             jd["@context"]["owl"] = "http://www.w3.org/2002/07/owl#"
+            if rb_final and rb_final in C:
+                jd["@context"]["dct"] = "http://purl.org/dc/terms/"
+                jd["dct:isReplacedBy"] = {"@id": C[rb_final]["uri"]}
         jsonld = json.dumps(jd, ensure_ascii=False, separators=(",", ":"))
 
         doc = (

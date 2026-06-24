@@ -1,0 +1,9 @@
+.DS_Store
+# working DB (repo ships the gzipped snapshot)
+legal-taxonomy.db
+legal-taxonomy.db.bak
+# dedup scratch: keep scripts + CSVs + SUMMARY, drop large model outputs/embeddings
+dedup/*.jsonl
+dedup/*.pkl
+dedup/_*.csv
+dedup/*.bak
