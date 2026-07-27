@@ -121,6 +121,7 @@ def main():
         ".dep{background:#fff6e5;border:1px solid #f0c36d;padding:.5rem .75rem;border-radius:6px;margin:1rem 0;font-size:.9rem}"
         "footer{margin-top:2.5rem;padding-top:1rem;border-top:1px solid var(--line);font-size:.82rem;color:var(--mut)}"
         "footer a{margin-right:1rem}"
+        "footer .lic{display:block;margin-top:.5rem}footer .lic a{margin-right:0}"
         "details{margin:.3rem 0}summary{cursor:pointer;color:var(--mut)}"
         "@media(max-width:560px){ul.cl{columns:1}dl{grid-template-columns:1fr}}"
     )
@@ -258,6 +259,9 @@ def main():
             f'<a href="{BASE}/legal-taxonomy.ttl">TTL</a>'
             f'<a href="{BASE}/legal-taxonomy.jsonld">JSON-LD</a>'
             f'<a href="{BASE}/scheme.ttl">Scheme</a>'
+            '<span class="lic">Data licensed <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>'
+            ' · © Arthur S. Rodrigues'
+            ' · <a href="https://github.com/arthrod/legal-taxonomy/blob/main/NOTICE.md">Notice &amp; attribution</a></span>'
             "</footer></main></body></html>"
         )
 
@@ -289,6 +293,9 @@ def main():
         "<footer>"
         f'<a href="{BASE}/">Home</a><a href="{BASE}/explore/">Explorer</a>'
         f'<a href="{BASE}/legal-taxonomy.ttl">TTL</a>'
+        '<span class="lic">Data licensed <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>'
+        ' · © Arthur S. Rodrigues'
+        ' · <a href="https://github.com/arthrod/legal-taxonomy/blob/main/NOTICE.md">Notice &amp; attribution</a></span>'
         "</footer></main></body></html>"
     )
     with open(os.path.join(OUT, "index.html"), "w") as f:

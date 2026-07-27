@@ -1,6 +1,9 @@
+# Open Legal Issue Taxonomy (OLIT) — data licensed CC BY 4.0
+# https://creativecommons.org/licenses/by/4.0/ — see NOTICE.md for attribution and sources.
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix dct:  <http://purl.org/dc/terms/> .
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix cc:   <http://creativecommons.org/ns#> .
 @prefix c: <https://w3id.org/legal-taxonomy/concept/> .
 
 c:045554 a skos:Concept ;

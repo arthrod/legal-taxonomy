@@ -10,10 +10,18 @@ REPO=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB=os.path.join(REPO,"legal-taxonomy.db")
 SCHEME="https://w3id.org/legal-taxonomy/scheme/olit"
 CB="https://w3id.org/legal-taxonomy/concept/"
-PRE=('@prefix skos: <http://www.w3.org/2004/02/skos/core#> .\n'
+PRE=('# Open Legal Issue Taxonomy (OLIT) — data licensed CC BY 4.0\n'
+     '# https://creativecommons.org/licenses/by/4.0/ — see NOTICE.md for attribution and sources.\n'
+     '@prefix skos: <http://www.w3.org/2004/02/skos/core#> .\n'
      '@prefix dct:  <http://purl.org/dc/terms/> .\n'
      '@prefix owl:  <http://www.w3.org/2002/07/owl#> .\n'
+     '@prefix cc:   <http://creativecommons.org/ns#> .\n'
      '@prefix c: <https://w3id.org/legal-taxonomy/concept/> .\n\n')
+LIC=('  dct:license <https://creativecommons.org/licenses/by/4.0/> ;\n'
+     '  dct:rightsHolder "Arthur S. Rodrigues" ;\n'
+     '  cc:attributionName "Arthur S. Rodrigues — Open Legal Issue Taxonomy (OLIT)" ;\n'
+     '  cc:attributionURL <https://w3id.org/legal-taxonomy/> ;\n'
+     '  dct:bibliographicCitation "Rodrigues, Arthur S. Open Legal Issue Taxonomy (OLIT), 2026. https://w3id.org/legal-taxonomy/ — CC BY 4.0."@en ;\n')
 def esc(s): return s.replace('\\','\\\\').replace('"','\\"')
 def slug(label): return re.sub(r'[^a-z0-9]+','-',label.lower())[:40].strip('-')
 
@@ -43,13 +51,13 @@ dict_label={n:l for n,l,b,d,td,dep,rb in rows}
 tops=[n for n,l,b,d,td,dep,rb in rows if d==1 and not dep]
 # scheme.ttl
 with open(os.path.join(REPO,"scheme.ttl"),"w") as f:
-    f.write('@prefix skos: <http://www.w3.org/2004/02/skos/core#> .\n@prefix dct:  <http://purl.org/dc/terms/> .\n@prefix c: <https://w3id.org/legal-taxonomy/concept/> .\n\n')
-    f.write(f'<{SCHEME}> a skos:ConceptScheme ;\n  dct:title "Open Legal Issue Taxonomy"@en ;\n  skos:hasTopConcept\n    '+",\n    ".join(f"c:{t}" for t in tops)+" .\n")
+    f.write('@prefix skos: <http://www.w3.org/2004/02/skos/core#> .\n@prefix dct:  <http://purl.org/dc/terms/> .\n@prefix cc:   <http://creativecommons.org/ns#> .\n@prefix c: <https://w3id.org/legal-taxonomy/concept/> .\n\n')
+    f.write(f'<{SCHEME}> a skos:ConceptScheme ;\n  dct:title "Open Legal Issue Taxonomy"@en ;\n{LIC}  skos:hasTopConcept\n    '+",\n    ".join(f"c:{t}" for t in tops)+" .\n")
 # full ttl
 nlive=ndep=0
 with open(os.path.join(REPO,"legal-taxonomy.ttl"),"w") as f:
     f.write(PRE)
-    f.write(f'<{SCHEME}> a skos:ConceptScheme ;\n  dct:title "Open Legal Issue Taxonomy"@en ;\n  skos:hasTopConcept\n    '+",\n    ".join(f"c:{t}" for t in tops)+" .\n\n")
+    f.write(f'<{SCHEME}> a skos:ConceptScheme ;\n  dct:title "Open Legal Issue Taxonomy"@en ;\n{LIC}  skos:hasTopConcept\n    '+",\n    ".join(f"c:{t}" for t in tops)+" .\n\n")
     for n,l,b,d,td,dep,rb in rows:
         f.write(ttl_block(n,l,b,d,td,dep,rb))
         if dep: ndep+=1
@@ -66,8 +74,15 @@ for td,rs in bydom.items():
         f.write(PRE)
         for r in rs: f.write(ttl_block(*r))
 # json-ld (@graph)
-ctx={"skos":"http://www.w3.org/2004/02/skos/core#","dct":"http://purl.org/dc/terms/","owl":"http://www.w3.org/2002/07/owl#","@vocab":"http://www.w3.org/2004/02/skos/core#"}
-g=[]
+ctx={"skos":"http://www.w3.org/2004/02/skos/core#","dct":"http://purl.org/dc/terms/","owl":"http://www.w3.org/2002/07/owl#","cc":"http://creativecommons.org/ns#","@vocab":"http://www.w3.org/2004/02/skos/core#"}
+g=[{"@id":SCHEME,"@type":"skos:ConceptScheme",
+    "dct:title":{"@language":"en","@value":"Open Legal Issue Taxonomy"},
+    "dct:license":{"@id":"https://creativecommons.org/licenses/by/4.0/"},
+    "dct:rightsHolder":"Arthur S. Rodrigues",
+    "cc:attributionName":"Arthur S. Rodrigues — Open Legal Issue Taxonomy (OLIT)",
+    "cc:attributionURL":{"@id":"https://w3id.org/legal-taxonomy/"},
+    "dct:bibliographicCitation":{"@language":"en","@value":"Rodrigues, Arthur S. Open Legal Issue Taxonomy (OLIT), 2026. https://w3id.org/legal-taxonomy/ — CC BY 4.0."},
+    "skos:hasTopConcept":[{"@id":CB+t} for t in tops]}]
 for n,l,b,d,td,dep,rb in rows:
     o={"@id":CB+n,"@type":"skos:Concept","skos:notation":n,"skos:prefLabel":{"@language":"en","@value":l},"skos:inScheme":{"@id":SCHEME}}
     if dep:

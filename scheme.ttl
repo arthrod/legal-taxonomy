@@ -1,9 +1,15 @@
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix dct:  <http://purl.org/dc/terms/> .
+@prefix cc:   <http://creativecommons.org/ns#> .
 @prefix c: <https://w3id.org/legal-taxonomy/concept/> .
 
 <https://w3id.org/legal-taxonomy/scheme/olit> a skos:ConceptScheme ;
   dct:title "Open Legal Issue Taxonomy"@en ;
+  dct:license <https://creativecommons.org/licenses/by/4.0/> ;
+  dct:rightsHolder "Arthur S. Rodrigues" ;
+  cc:attributionName "Arthur S. Rodrigues — Open Legal Issue Taxonomy (OLIT)" ;
+  cc:attributionURL <https://w3id.org/legal-taxonomy/> ;
+  dct:bibliographicCitation "Rodrigues, Arthur S. Open Legal Issue Taxonomy (OLIT), 2026. https://w3id.org/legal-taxonomy/ — CC BY 4.0."@en ;
   skos:hasTopConcept
     c:000001,
     c:007400,

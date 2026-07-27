@@ -1,5 +1,7 @@
 # Open Legal Issue Taxonomy (OLIT)
 
+[![Data: CC BY 4.0](https://img.shields.io/badge/data-CC%20BY%204.0-blue.svg)](LICENSE) [![Code: Apache-2.0](https://img.shields.io/badge/code-Apache--2.0-blue.svg)](LICENSE-CODE)
+
 A SKOS controlled vocabulary of **247,929 active legal-issue concepts** organised under
 **13 top-level legal domains**, with stable, permanent identifiers. A further **39,786
 near-duplicate concepts have been merged and deprecated** (retained as resolvable URIs) by a
@@ -86,6 +88,17 @@ are regenerated from the same `legal-taxonomy.db` by `python3 tools/gen_rdf.py`,
 emits the `owl:deprecated` / `dct:isReplacedBy` / `skos:historyNote` triples for merged
 concepts. The de-duplication tooling itself lives under `dedup/` (six-model ensemble vote,
 apply, lexical closure, and an integrity verifier — `dedup/SUMMARY.md` has the details).
+
+## License & attribution
+
+- **Data** (vocabulary, RDF/JSON-LD/SQLite artifacts, concept pages): [CC BY 4.0](LICENSE).
+- **Code** (`tools/`, `dedup/`): [Apache-2.0](LICENSE-CODE).
+- Sources, the position on NC-licensed inputs, and FOLIO attribution for the
+  FOLIO-anchored editions: see [NOTICE.md](NOTICE.md).
+
+Cite as: Rodrigues, Arthur S. *Open Legal Issue Taxonomy (OLIT)*, 2026.
+https://w3id.org/legal-taxonomy/ — CC BY 4.0. Machine-readable license triples
+(`dct:license`, `cc:attributionName`) are embedded in the ConceptScheme.
 
 ## Maintainer
 
